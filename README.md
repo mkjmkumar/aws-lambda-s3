@@ -24,7 +24,7 @@ endpoint_url = http://host.docker.internal:4566
 ```
 
 
-## ◆LocalStack test-bucket
+# LocalStack test-bucket
 ```
 # awslocal s3api create-bucket --bucket test-bucket
 {
@@ -32,9 +32,10 @@ endpoint_url = http://host.docker.internal:4566
 }
 ```
 
-# awslocal s3 ls
-2022-12-02 13:39:30 test-bucket
+# Validate it
 ```
+awslocal s3 ls
+2022-12-02 13:39:30 test-bucket
 # vi test.txt
 test.file
 # cat test.txt
@@ -45,19 +46,17 @@ test.file
 upload: ./test.txt to s3://test-bucket/test.txt
 # awslocal s3 ls test-bucket
 2022-12-02 13:45:42         10 test.txt
-```
-```
 # rm test.txt
 # awslocal s3 cp s3://test-bucket/test.txt ./
 download: s3://test-bucket/test.txt to ./test.txt
 # vi test.txt
 test.file
-
 # cat test.txt
 test.file
+touch test2.txt
 ```
 
-touch test2.txt
+# Test a python function locally - test.py
 ```
 import boto3
 
@@ -69,27 +68,33 @@ def main() :
 
 if __name__ == "__main__":
     main()
-#  python3 test.py
-upload complate
-```
 
 ```
-# awslocal s3 ls s3://test-bucket
+#  Run function
+```
+
+python3 test.py
+upload complate
+
+```
+
+
+# Check Results
+```
+
+awslocal s3 ls s3://test-bucket
 2022-12-30 20:48:30         11 test.txt
 2022-12-30 23:53:08         12 test2.txt
 ```
 
 
-## Lambda
+## Lambda - now prepare for running this function in aws using script lambda.py  
 ```
 lambda.py 
-```
 
 # zip lambda.zip lambda.py
   adding: lambda.py (deflated 42%)
-```
 
-```
 # aws lambda create-function --function-name test --runtime python3.8 --handler lambda.lambda_handler --role arn:aws:iam::000000000000:role/lambda-role --zip-file fileb://lambda.zip
 {
     "FunctionName": "test",
@@ -127,28 +132,29 @@ lambda.py
     }
 }
 ```
-# aws lambda invoke --function-name test output.log
+# Invoke the Lambda Function
+```
+aws lambda invoke --function-name test output.log
 {
     "StatusCode": 200,
     "ExecutedVersion": "$LATEST"
 }
 ```
-# cat ./output.log
-"create file2024-01-02-03-48-33.txt"
+# Verify the output 
 ```
+cat ./output.log
+"create file2024-01-02-03-48-33.txt"
+
 awslocal s3 ls s3://test-bucket
 2024-01-02 03:48:33         16 2024-01-02-03-48-33.txt
 2024-01-02 03:37:36         11 test.txt
 2024-01-02 03:44:09          0 test2.txt
 ```
 
-```
-lambda2.py
-```
-ZIP作成
+# Prepare for another script to run on Lambda i.e. lambda2.py
 ```
 # zip lambda2.zip lambda2.py
-```
+
 # aws lambda create-function --function-name test2  --runtime python3.8 --handler lambda2.lambda_handler --role arn:aws:iam::000000000000:role/lambda-role  --zip-file fileb://lambda2.zip
 {
     "FunctionName": "test2",
@@ -186,16 +192,20 @@ ZIP作成
     }
 }
 ```
-# aws lambda invoke --function-name test2 result2.log
+# Invoke this function 
+```
+aws lambda invoke --function-name test2 result2.log
 {
     "StatusCode": 200,
     "ExecutedVersion": "$LATEST"
 }
 
 ```
-# cat result2.log
-"create file2024-01-02-03-54-03.txt"
+# Verify with result
 ```
+cat result2.log
+"create file2024-01-02-03-54-03.txt"
+
 # awslocal s3 ls s3://test-bucket
 2024-01-02 03:48:33         16 2024-01-02-03-48-33.txt
 2024-01-02 03:54:03         16 2024-01-02-03-54-03.txt
@@ -203,14 +213,11 @@ ZIP作成
 2024-01-02 03:44:09          0 test2.txt
 ```
 
-## Lambda(test3)
+## Prepare for one more function to run on Lambda i.e. Lambda(test3)
+
 ```
 test3.py
-```
-ZIP
-```
 # zip lambda3.zip test3.py
-```
 # aws lambda create-function --function-name test3  --runtime python3.8 --handler test3.handler --role arn:aws:iam::000000000000:role/lambda-role  --zip-file fileb://lambda3.zip
 {
     "FunctionName": "test3",
@@ -248,19 +255,23 @@ ZIP
     }
 }
 ```
-# aws lambda invoke --function-name test3 result3.log
+# Invoke the function
+```
+aws lambda invoke --function-name test3 result3.log
 {
     "StatusCode": 200,
     "ExecutedVersion": "$LATEST"
 }
 ```
-# cat result3.log
-{"message":"a-object placed into S3"}
+# Validate the result
 ```
+cat result3.log
+{"message":"a-object placed into S3"}
+
 # awslocal s3 ls s3://
 2024-01-02 03:33:20 test-bucket
 2024-01-02 03:57:02 a-bucket
-```
+
 # awslocal s3 ls s3://a-bucket
 2024-01-02 03:57:02          9 a-object
 ```
