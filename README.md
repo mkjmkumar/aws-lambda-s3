@@ -1,4 +1,4 @@
-## LocalStack
+## LocalStack with Lambda and S3
 ```
 # aws configure
 AWS Access Key ID [None]: test
@@ -88,7 +88,7 @@ awslocal s3 ls s3://test-bucket
 ```
 
 
-## Lambda - now prepare for running this function in aws using script lambda.py  
+# Lambda - now prepare for running this function in aws using script lambda.py  
 ```
 lambda.py 
 
@@ -213,7 +213,7 @@ cat result2.log
 2024-01-02 03:44:09          0 test2.txt
 ```
 
-## Prepare for one more function to run on Lambda i.e. Lambda(test3)
+# Prepare for one more function to run on Lambda i.e. Lambda(test3)
 
 ```
 test3.py
