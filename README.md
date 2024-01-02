@@ -6,12 +6,17 @@ AWS Secret Access Key [None]: test
 Default region name [None]: us-east-1
 Default output format [None]: json
 ```
-# cat ~/.aws/credentials
+# Verify Credentials 
+```
+cat ~/.aws/credentials
 [default]
 aws_access_key_id = test
 aws_secret_access_key = test
 ```
-# vi ~/.aws/config
+
+# Edit to add the endpoint URL
+```
+vi ~/.aws/config
 [default]
 region = us-east-1
 output = json
@@ -25,6 +30,7 @@ endpoint_url = http://host.docker.internal:4566
 {
     "Location": "/test-bucket"
 }
+```
 
 # awslocal s3 ls
 2022-12-02 13:39:30 test-bucket
